@@ -10,3 +10,6 @@ spring:
     hibernate:
       ddl-auto: update
     show-sql: true
+jwt:
+  signerKey: "fc9c59bd385c1c0682de9ce04d4f5a9ab4b783bd4c4f22c8b91ce5808b2a65e7"
+  valid-duration: 10 # in second
