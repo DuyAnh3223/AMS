@@ -16,9 +16,11 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.util.CollectionUtils;
 import spring.serverspringboot.dto.auth.*;
+import spring.serverspringboot.entity.ExpiredToken;
 import spring.serverspringboot.entity.User;
 import spring.serverspringboot.exception.AppException;
 import spring.serverspringboot.exception.ErrorCode;
+import spring.serverspringboot.repository.ExpiredTokenRepository;
 import spring.serverspringboot.repository.UserRepository;
 
 import java.text.ParseException;
@@ -35,6 +37,7 @@ import java.util.UUID;
 public class AuthService {
 
     UserRepository userRepository;
+    ExpiredTokenRepository expiredTokenRepository;
 
     @NonFinal
     @Value("${jwt.signerKey}")
@@ -79,15 +82,23 @@ public class AuthService {
                 .build();
     }
 
-//    public void logout(LogoutRequest request){
-//        try{
-//            var signToken = verifyToken(request.getToken());
-//            String jti = signToken.getJWTClaimsSet().getJWTID();
-//            Date expiryTime = signToken.getJWTClaimsSet().getExpirationTime();
-//
-//        }
-//
-//    }
+    public void logout(LogoutRequest request) throws ParseException, JOSEException {
+        try{
+            var signToken = verifyToken(request.getToken());
+            String jti = signToken.getJWTClaimsSet().getJWTID();
+            Date expiryTime = signToken.getJWTClaimsSet().getExpirationTime();
+
+            ExpiredToken expiredToken = ExpiredToken.builder()
+                    .id(jti)
+                    .expiryTime(expiryTime)
+                    .build();
+
+            expiredTokenRepository.save(expiredToken);
+        }catch (AppException e){
+            log.info("Token already expired");
+        }
+
+    }
 
     private String generateToken(User user) {
         JWSHeader jwsHeader = new JWSHeader(JWSAlgorithm.HS512);

@@ -9,10 +9,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import spring.serverspringboot.dto.ApiResponse;
-import spring.serverspringboot.dto.auth.AuthRequest;
-import spring.serverspringboot.dto.auth.AuthResponse;
-import spring.serverspringboot.dto.auth.IntrospectRequest;
-import spring.serverspringboot.dto.auth.IntrospectResponse;
+import spring.serverspringboot.dto.auth.*;
 import spring.serverspringboot.service.AuthService;
 
 import java.text.ParseException;
@@ -36,5 +33,13 @@ public class AuthController {
         return ApiResponse.<IntrospectResponse>builder()
                 .result(authService.introspect(request))
                 .build();
+    }
+
+    @PostMapping("/log-out")
+    ApiResponse<Void> logout(@RequestBody LogoutRequest request) throws ParseException, JOSEException {
+
+        authService.logout(request);
+
+        return ApiResponse.<Void>builder().build();
     }
 }
