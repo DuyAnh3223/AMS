@@ -8,7 +8,7 @@ import spring.serverspringboot.dto.request.UserUpdateRequest;
 import spring.serverspringboot.dto.response.UserResponse;
 import spring.serverspringboot.entity.User;
 
-@Mapper(componentModel = "spring")
+@Mapper(componentModel = "spring", uses = {RoleMapper.class})
 public interface UserMapper {
     User toUser(UserCreateRequest request);
 

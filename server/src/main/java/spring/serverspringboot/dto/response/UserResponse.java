@@ -3,6 +3,8 @@ package spring.serverspringboot.dto.response;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
 
+import java.util.Set;
+
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
@@ -12,4 +14,5 @@ public class UserResponse {
     String id;
     String username;
     String password;
+    Set<RoleResponse> roles;
 }
