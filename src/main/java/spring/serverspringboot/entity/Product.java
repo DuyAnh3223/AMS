@@ -4,24 +4,24 @@ import jakarta.persistence.*;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
 
-import java.util.Set;
-
+@Entity
 @Getter
 @Setter
-@Entity
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE)
-public class User {
+@Table(name = "products")
+public class Product {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.UUID)
-    String id;
+    @GeneratedValue(strategy = GenerationType.AUTO)
+    Long id;
 
-    String username;
-    String password;
+    String skuCode;
+    String name;
+    String unit; // ĐVT
+    String properties; // Tính chất
 
-    @ManyToMany
-    Set<Role> roles;
+
 }
