@@ -1,6 +1,7 @@
 package spring.serverspringboot.mapper;
 
 import org.mapstruct.Mapper;
+import org.mapstruct.MappingTarget;
 import spring.serverspringboot.dto.request.ProductRequest;
 import spring.serverspringboot.dto.response.ProductResponse;
 import spring.serverspringboot.entity.Product;
@@ -11,4 +12,5 @@ public interface ProductMapper {
 
     ProductResponse toProductResponse(Product product);
 
+    void updateProduct(@MappingTarget Product product, ProductRequest request);
 }

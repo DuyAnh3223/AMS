@@ -52,15 +52,15 @@ public class AuthService {
     protected Long REFRESHABLE_DURATION;
 
 
-    public IntrospectResponse introspect(IntrospectRequest request) throws ParseException, JOSEException {
+    public IntrospectResponse introspect(IntrospectRequest request) {
 
         var token = request.getToken();
 
         boolean isValid = true;
 
-        try{
-            verifyToken(token,false);
-        } catch (AppException e){
+        try {
+            verifyToken(token, false);
+        } catch (AppException | JOSEException | ParseException e) {
             isValid = false;
         }
         return IntrospectResponse.builder().valid(isValid).build();
@@ -137,6 +137,9 @@ public class AuthService {
     }
 
     private SignedJWT verifyToken(String token,boolean isRefresh) throws JOSEException, ParseException {
+        if (token == null || token.isBlank()) {
+            throw new AppException(ErrorCode.UNAUTHENTICATED);
+        }
         JWSVerifier verifier = new MACVerifier(SIGNER_KEY.getBytes());
 
         SignedJWT signedJWT = SignedJWT.parse(token);
