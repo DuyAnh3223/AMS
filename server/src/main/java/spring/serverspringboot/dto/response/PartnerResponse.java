@@ -12,7 +12,8 @@ public class PartnerResponse {
     Long id;
     String partnerCode;
     String name;
-    String partnerType;
+    boolean isCustomer;
+    boolean isSupplier;
     String address;
     String taxCode;
     String phone;

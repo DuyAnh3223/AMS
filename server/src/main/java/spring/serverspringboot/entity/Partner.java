@@ -26,8 +26,11 @@ public class Partner {
     @Column(nullable = false, length = 200)
     String name;
 
-    @Column(nullable = false)
-    String partnerType;
+    @Column(name = "is_customer", nullable = false)
+    boolean isCustomer;
+
+    @Column(name = "is_supplier", nullable = false)
+    boolean isSupplier;
 
     String address;
     String taxCode;

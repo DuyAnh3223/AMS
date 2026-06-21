@@ -17,6 +17,7 @@ import org.springframework.web.bind.annotation.RestController;
 import spring.serverspringboot.dto.ApiResponse;
 import spring.serverspringboot.dto.request.PartnerRequest;
 import spring.serverspringboot.dto.response.PartnerResponse;
+import spring.serverspringboot.entity.Partner;
 import spring.serverspringboot.service.PartnerService;
 
 import java.util.List;
@@ -29,51 +30,75 @@ import java.util.List;
 public class PartnerController {
     PartnerService partnerService;
 
-    @PostMapping
-    ApiResponse<PartnerResponse> create(@RequestBody PartnerRequest request) {
+// Customer 
+    @PostMapping("/customers")
+    ApiResponse<PartnerResponse> createCustomer(@RequestBody PartnerRequest request) {
         return ApiResponse.<PartnerResponse>builder()
-                .result(partnerService.create(request))
+                .result(partnerService.createCustomer(request))
                 .build();
     }
 
-    @GetMapping("/{partnerId}")
-    ApiResponse<PartnerResponse> getPartner(@PathVariable Long partnerId) {
+    @GetMapping("/customers/{partnerId}")
+    ApiResponse<PartnerResponse> getCustomer(@PathVariable Long partnerId) {
         return ApiResponse.<PartnerResponse>builder()
-                .result(partnerService.getPartner(partnerId))
+                .result(partnerService.getCustomer(partnerId))
                 .build();
     }
 
-    @PutMapping("/{partnerId}")
-    ApiResponse<PartnerResponse> update(@PathVariable Long partnerId, @RequestBody PartnerRequest request) {
+    @GetMapping("/customers")
+    ApiResponse<List<Partner>> getCustomers(){
+        return ApiResponse.<List<Partner>>builder().result(partnerService.getCustomers()).build();
+    }
+
+    @PutMapping("/customers/{partnerId}")
+    ApiResponse<PartnerResponse> updateCustomer(@PathVariable Long partnerId, @RequestBody PartnerRequest request) {
         return ApiResponse.<PartnerResponse>builder()
-                .result(partnerService.update(partnerId, request))
+                .result(partnerService.updateCustomer(partnerId, request))
                 .build();
     }
 
-    @DeleteMapping("/{partnerId}")
-    ApiResponse<String> delete(@PathVariable Long partnerId) {
-        partnerService.delete(partnerId);
+    @DeleteMapping("/customers/{partnerId}")
+    ApiResponse<String> deleteCustomer(@PathVariable Long partnerId) {
+        partnerService.deleteCustomer(partnerId);
         return ApiResponse.<String>builder()
-                .result("Partner has been deleted")
+                .result("Customer has been deleted")
                 .build();
     }
 
-    @GetMapping
-    ApiResponse<Page<PartnerResponse>> search(
-            @RequestParam String partnerType,
-            @RequestParam(defaultValue = "") String keyword,
-            @RequestParam(defaultValue = "0") int page,
-            @RequestParam(defaultValue = "10") int size
-    ) {
-        return ApiResponse.<Page<PartnerResponse>>builder()
-                .result(partnerService.search(partnerType, keyword, page, size))
+    // Supplier
+    @PostMapping("/suppliers")
+    ApiResponse<PartnerResponse> createSupplier(@RequestBody PartnerRequest request) {
+        return ApiResponse.<PartnerResponse>builder()
+                .result(partnerService.createSupplier(request))
                 .build();
     }
 
-    @GetMapping("/all")
-    ApiResponse<List<PartnerResponse>> getPartners(@RequestParam(required = false) String partnerType) {
-        return ApiResponse.<List<PartnerResponse>>builder()
-                .result(partnerService.getPartners(partnerType))
+    @GetMapping("/suppliers/{partnerId}")
+    ApiResponse<PartnerResponse> getSupplier(@PathVariable Long partnerId) {
+        return ApiResponse.<PartnerResponse>builder()
+                .result(partnerService.getSupplier(partnerId))
                 .build();
     }
+
+    @GetMapping("/suppliers")
+    ApiResponse<List<Partner>> getSupplier(){
+        return ApiResponse.<List<Partner>>builder().result(partnerService.getSuppliers()).build();
+    }
+
+    @PutMapping("/suppliers/{partnerId}")
+    ApiResponse<PartnerResponse> updateSupplier(@PathVariable Long partnerId, @RequestBody PartnerRequest request) {
+        return ApiResponse.<PartnerResponse>builder()
+                .result(partnerService.updateSupplier(partnerId, request))
+                .build();
+    }
+
+    @DeleteMapping("/suppliers/{partnerId}")
+    ApiResponse<String> deleteSupplier(@PathVariable Long partnerId) {
+        partnerService.deleteSupplier(partnerId);
+        return ApiResponse.<String>builder()
+                .result("Supplier has been deleted")
+                .build();
+    }
+
+    
 }

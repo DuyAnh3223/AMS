@@ -26,61 +26,103 @@ public class PartnerService {
     PartnerRepository partnerRepository;
     PartnerMapper partnerMapper;
 
-    public PartnerResponse create(PartnerRequest request) {
-        if (partnerRepository.existsByPartnerCode(request.getPartnerCode())) {
-            throw new AppException(ErrorCode.PARTNER_CODE_EXISTED);
+
+// Customer
+
+    public PartnerResponse createCustomer(PartnerRequest request) {
+        Partner partner = partnerRepository.findPartnerByPartnerCode(request.getPartnerCode()).orElse(null);
+        if (partner != null) {
+            if (partner.isCustomer()) {
+                throw new AppException(ErrorCode.PARTNER_EXISTED);
+            } else {
+                partner.setCustomer(true);
+                partner.setActive(true);
+                partnerRepository.save(partner);
+            }
+        } else {
+            partner = partnerMapper.toPartner(request);
+            partner.setCustomer(true);
+            partner.setActive(true);
+            partnerRepository.save(partner);
         }
-
-        Partner partner = partnerMapper.toPartner(request);
-        partner.setActive(true);
-
-        partner = partnerRepository.save(partner);
         return partnerMapper.toPartnerResponse(partner);
     }
-
-    private Partner findPartnerById(Long partnerId) {
-        return partnerRepository.findById(partnerId)
+    public PartnerResponse getCustomer(Long partnerId){
+        Partner partner = partnerRepository.findPartnerByIdAndIsCustomer(partnerId, true)
                 .orElseThrow(() -> new AppException(ErrorCode.PARTNER_NOT_EXISTED));
+        return partnerMapper.toPartnerResponse(partner);
+    }
+    public List<Partner> getCustomers(){
+        return partnerRepository.findAllByIsCustomerTrue();
     }
 
-    public PartnerResponse getPartner(Long partnerId) {
-        return partnerMapper.toPartnerResponse(findPartnerById(partnerId));
-    }
-
-    public PartnerResponse update(Long partnerId, PartnerRequest request) {
-        Partner partner = findPartnerById(partnerId);
-
-        if (partnerRepository.existsByPartnerCodeAndIdNot(request.getPartnerCode(), partnerId)) {
-            throw new AppException(ErrorCode.PARTNER_CODE_EXISTED);
-        }
-
+    public PartnerResponse updateCustomer(Long partnerId, PartnerRequest request) {
+        Partner partner = partnerRepository.findPartnerByIdAndIsCustomer(partnerId, true)
+                .orElseThrow(() -> new AppException(ErrorCode.PARTNER_NOT_EXISTED));
         partnerMapper.updatePartner(partner, request);
-
+        partner.setCustomer(true);
         partner = partnerRepository.save(partner);
         return partnerMapper.toPartnerResponse(partner);
     }
 
-    public void delete(Long partnerId) {
-        Partner partner = findPartnerById(partnerId);
-        partner.setActive(false);
+    public void deleteCustomer(Long partnerId) {
+        Partner partner = partnerRepository.findPartnerByIdAndIsCustomer(partnerId, true)
+                .orElseThrow(() -> new AppException(ErrorCode.PARTNER_NOT_EXISTED));
+        partner.setCustomer(false);
+
+        if (!partner.isSupplier()) {
+            partner.setActive(false);
+        }
+
         partnerRepository.save(partner);
     }
 
-    public List<PartnerResponse> getPartners(String partnerType) {
-        List<Partner> partners;
-        if (partnerType == null || partnerType.isEmpty()) {
-            partners = partnerRepository.findAll();
+// Supplier
+
+    public PartnerResponse createSupplier(PartnerRequest request) {
+        Partner partner = partnerRepository.findPartnerByPartnerCode(request.getPartnerCode()).orElse(null);
+        if (partner != null) {
+            if (partner.isSupplier()) {
+                throw new AppException(ErrorCode.PARTNER_EXISTED);
+            } else {
+                partner.setSupplier(true);
+                partner.setActive(true);
+                partnerRepository.save(partner);
+            }
         } else {
-            partners = partnerRepository.findByPartnerType(partnerType);
+            partner = partnerMapper.toPartner(request);
+            partner.setSupplier(true);
+            partner.setActive(true);
+            partnerRepository.save(partner);
         }
-        return partners.stream()
-                .map(partnerMapper::toPartnerResponse)
-                .toList();
+        return partnerMapper.toPartnerResponse(partner);
+    }
+    public PartnerResponse getSupplier(Long partnerId){
+        Partner partner = partnerRepository.findPartnerByIdAndIsSupplier(partnerId, true)
+                .orElseThrow(() -> new AppException(ErrorCode.PARTNER_NOT_EXISTED));
+        return partnerMapper.toPartnerResponse(partner);
+    }
+    public List<Partner> getSuppliers(){
+        return partnerRepository.findAllByIsSupplierTrue();
     }
 
-    public Page<PartnerResponse> search(String partnerType, String keyword, int page, int size) {
-        Pageable pageable = PageRequest.of(page, size);
-        return partnerRepository.search(partnerType, keyword, pageable)
-                .map(partnerMapper::toPartnerResponse);
+    public PartnerResponse updateSupplier(Long partnerId, PartnerRequest request) {
+        Partner partner = partnerRepository.findPartnerByIdAndIsSupplier(partnerId, true)
+                .orElseThrow(() -> new AppException(ErrorCode.PARTNER_NOT_EXISTED));
+        partnerMapper.updatePartner(partner, request);
+        partner.setSupplier(true);
+        partner = partnerRepository.save(partner);
+        return partnerMapper.toPartnerResponse(partner);
+    }
+
+    public void deleteSupplier(Long partnerId) {
+        Partner partner = partnerRepository.findPartnerByIdAndIsSupplier(partnerId, true)
+                .orElseThrow(() -> new AppException(ErrorCode.PARTNER_NOT_EXISTED));
+         partner.setSupplier(false);
+
+        if (!partner.isCustomer()) {
+            partner.setActive(false);
+        }
+        partnerRepository.save(partner);
     }
 }

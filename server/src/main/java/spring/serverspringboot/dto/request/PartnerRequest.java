@@ -11,7 +11,8 @@ import lombok.experimental.FieldDefaults;
 public class PartnerRequest {
     String partnerCode;
     String name;
-    String partnerType;
+    boolean isCustomer;
+    boolean isSupplier;
     String address;
     String taxCode;
     String phone;
